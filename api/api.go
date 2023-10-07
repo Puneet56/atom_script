@@ -3,10 +3,13 @@ package api
 import (
 	"atom_script/lexer"
 	"atom_script/token"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func Init() {
@@ -16,9 +19,26 @@ func Init() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
+	e.Use(middleware.LoggerWithConfig(
+		middleware.LoggerConfig{
+			Format: "method=${method}, uri=${uri}, status=${status}\n",
+		},
+	))
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	}))
+
 	e.POST("/api/tokenize", handleTokenize)
 
-	e.Logger.Fatal(e.Start("127.0.0.1:1323"))
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "1323"
+	}
+
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
 }
 
 func handleTokenize(c echo.Context) error {
