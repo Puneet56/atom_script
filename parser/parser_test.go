@@ -7,19 +7,19 @@ import (
 )
 
 func TestAtomStatement(t *testing.T) {
-	// input := `
-	// atom a = 1;
-	// atom b = 2;
-
-	// atom foobar = 123223;
-	// `
-
 	input := `
-	atom a  1;
-	atom  = 2;
+	atom a = 1;
+	atom b = 2;
 
-	atom 123223;
+	atom foobar = 123223;
 	`
+
+	// input := `
+	// atom a  1;
+	// atom  = 2;
+
+	// atom 123223;
+	// `
 
 	l := lexer.New(input)
 
@@ -78,6 +78,43 @@ func testAtomStatement(t *testing.T, s ast.Statement, name string) bool {
 	}
 
 	return true
+}
+
+func TestProduceStatement(t *testing.T) {
+
+	input := `
+		produce 5;
+		produce 10;
+		produce 99922299;
+	`
+
+	l := lexer.New(input)
+
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 3 {
+		t.Fatalf("program statements does not contain 3 statement. got=%d\n",
+			len(program.Statements),
+		)
+	}
+
+	for _, stmt := range program.Statements {
+		produceStmt, ok := stmt.(*ast.ProduceStatementStruct)
+
+		if !ok {
+			t.Errorf("statement not *ast.Statement. got=%T\n", stmt)
+			continue
+		}
+
+		if produceStmt.TokenLiteral() != "produce" {
+			t.Errorf("token literal of statement is not produce. got=%q", produceStmt.TokenLiteral())
+		}
+
+	}
+
 }
 
 func checkParserErrors(t *testing.T, p *Parser) {

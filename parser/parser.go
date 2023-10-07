@@ -66,6 +66,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.ATOM:
 		return p.parseAtomStatement()
+	case token.PROODUCE:
+		return p.praseProduceStatement()
 	default:
 		return nil
 	}
@@ -91,6 +93,21 @@ func (p *Parser) parseAtomStatement() *ast.AtomStatement {
 
 	//TODO: Skipping parsing expressions
 	if !p.curTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) praseProduceStatement() *ast.ProduceStatementStruct {
+	stmt := &ast.ProduceStatementStruct{
+		Token: p.curToken,
+	}
+
+	p.nextToken()
+
+	// TODO: parse the expression (ReturnValue) also
+	for !p.curTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
 
