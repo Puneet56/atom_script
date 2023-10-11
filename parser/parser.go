@@ -66,7 +66,7 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.ATOM:
 		return p.parseAtomStatement()
-	case token.PROODUCE:
+	case token.PRODUCE:
 		return p.praseProduceStatement()
 	default:
 		return nil

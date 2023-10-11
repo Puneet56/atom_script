@@ -43,7 +43,7 @@ const (
 	FALSE    = "FALSE"
 	IF       = "IF"
 	ELSE     = "ELSE"
-	PROODUCE = "PRODUCE"
+	PRODUCE  = "PRODUCE"
 )
 
 // Instead of let, const and fn we are using ATOM, MOLECULE and REACTION. We are also using PRODUCE instead of return.
@@ -56,7 +56,7 @@ var keywords = map[string]TokenType{
 	"false":    FALSE,
 	"if":       IF,
 	"else":     ELSE,
-	"produce":  PROODUCE,
+	"produce":  PRODUCE,
 }
 
 // LookupIdent checks the keywords table to see whether the given identifier is in fact a keyword.
