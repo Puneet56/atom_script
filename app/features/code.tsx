@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@radix-ui/react-label';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -29,25 +28,43 @@ const CodeEditor = () => {
 			});
 	};
 
+	const parseCode = () => {
+		setOutput('Loading...');
+
+		axios
+			.post(process.env.NEXT_PUBLIC_API_URL + '/api/parse', code)
+			.then(res => {
+				setOutput(res.data.join('\n'));
+			})
+			.catch(err => {
+				setOutput(JSON.stringify(err.response.data, null, 2));
+			});
+	};
+
 	return (
 		<div className="flex w-full flex-col items-center gap-8">
 			<div className="flex w-full items-start justify-evenly gap-8 px-8">
 				<div className="w-full">
-					<Label className="mb-2">Code</Label>
+					<p className="mb-4">Atom script code</p>
 					<Textarea
 						value={code}
 						onChange={e => setCode(e.target.value)}
 						rows={20}
 						className="w-full font-mono text-lg"
 					/>
+					<div className="flex gap-4 px-4">
+						<Button onClick={tokenizeCode} className="mt-8" disabled={code.length === 0}>
+							Tokenize
+						</Button>
 
-					<Button onClick={tokenizeCode} className="mt-8" disabled={code.length === 0}>
-						Tokenize
-					</Button>
+						<Button onClick={parseCode} className="mt-8" disabled={code.length === 0}>
+							Parse
+						</Button>
+					</div>
 				</div>
 
 				<div className="w-full">
-					<Label className="mb-2">Output</Label>
+					<p className="mb-4">Output</p>
 					<Textarea value={output} onChange={() => {}} rows={20} className="w-full font-mono text-lg" />
 				</div>
 			</div>
