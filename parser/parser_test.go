@@ -31,13 +31,6 @@ func TestAtomStatement(t *testing.T) {
 	atom foobar = 123223;
 	`
 
-	// input := `
-	// atom a  1;
-	// atom  = 2;
-
-	// atom 123223;
-	// `
-
 	l := lexer.New(input)
 
 	p := New(l)
@@ -91,6 +84,72 @@ func testAtomStatement(t *testing.T, s ast.Statement, name string) bool {
 
 	if atomStmt.Name.TokenLiteral() != name {
 		t.Errorf("atomStmt.Name.TokenLiteral() not '%s'. got=%s", name, atomStmt.Name.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
+func TestMoleculeStatement(t *testing.T) {
+	input := `
+	molecule a = 1;
+	molecule b = 2;
+
+	molecule foobar = 123223;
+	`
+
+	l := lexer.New(input)
+
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	if len(program.Statements) != 3 {
+		t.Fatalf("program.Statements does not contain 3 statements. got=%d", len(program.Statements))
+	}
+
+	tests := []struct {
+		expectedIdentifier string
+	}{
+		{"a"},
+		{"b"},
+		{"foobar"},
+	}
+
+	for i, tt := range tests {
+		stmt := program.Statements[i]
+
+		if !testMoleculeStatement(t, stmt, tt.expectedIdentifier) {
+			return
+		}
+	}
+}
+
+func testMoleculeStatement(t *testing.T, s ast.Statement, name string) bool {
+	if s.TokenLiteral() != "molecule" {
+		t.Errorf("s.TokenLiteral not 'molecule'. got=%q", s.TokenLiteral())
+		return false
+	}
+
+	moleculeStmt, ok := s.(*ast.MoleculeStatement)
+
+	if !ok {
+		t.Errorf("s not *ast.MoleculeStatement. got=%T", s)
+		return false
+	}
+
+	if moleculeStmt.Name.Value != name {
+		t.Errorf("moleculeStmt.Name.Value not '%s'. got=%s", name, moleculeStmt.Name.Value)
+		return false
+	}
+
+	if moleculeStmt.Name.TokenLiteral() != name {
+		t.Errorf("moleculeStmt.Name.TokenLiteral() not '%s'. got=%s", name, moleculeStmt.Name.TokenLiteral())
 		return false
 	}
 

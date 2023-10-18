@@ -129,6 +129,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseAtomStatement()
 	case token.PRODUCE:
 		return p.praseProduceStatement()
+	case token.MOLECULE:
+		return p.parseMoleculeStatement()
 	default:
 		return p.parseExpressionStatement()
 	}
@@ -152,7 +154,35 @@ func (p *Parser) parseAtomStatement() *ast.AtomStatement {
 		return nil
 	}
 
-	//TODO: Skipping parsing expressions
+	p.nextToken()
+
+	stmt.Value = p.parseExpression(LOWEST)
+
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return stmt
+}
+
+func (p *Parser) parseMoleculeStatement() *ast.MoleculeStatement {
+	stmt := &ast.MoleculeStatement{
+		Token: p.curToken,
+	}
+
+	if !p.expectPeek(token.IDENT) {
+		return nil
+	}
+
+	stmt.Name = &ast.Identifier{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
+
+	if !p.expectPeek(token.ASSIGN) {
+		return nil
+	}
+
 	p.nextToken()
 
 	stmt.Value = p.parseExpression(LOWEST)
@@ -381,58 +411,77 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 
 func (p *Parser) parseReactionLiteral() ast.Expression {
 	lit := &ast.FunctionLiteral{Token: p.curToken}
+
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
+
 	lit.Parameters = p.parseReactionParameters()
+
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
+
 	lit.Body = p.parseBlockStatement()
+
 	return lit
 }
 
 func (p *Parser) parseReactionParameters() []*ast.Identifier {
 	identifiers := []*ast.Identifier{}
+
 	if p.peekTokenIs(token.RPAREN) {
 		p.nextToken()
 		return identifiers
 	}
+
 	p.nextToken()
+
 	ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 	identifiers = append(identifiers, ident)
+
 	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
 		p.nextToken()
 		ident := &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 		identifiers = append(identifiers, ident)
 	}
+
 	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
+
 	return identifiers
 }
 
 func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	exp := &ast.CallExpression{Token: p.curToken, Function: function}
 	exp.Arguments = p.parseCallArguments()
+
 	return exp
 }
+
 func (p *Parser) parseCallArguments() []ast.Expression {
 	args := []ast.Expression{}
+
 	if p.peekTokenIs(token.RPAREN) {
 		p.nextToken()
 		return args
 	}
+
 	p.nextToken()
+
 	args = append(args, p.parseExpression(LOWEST))
+
 	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
 		p.nextToken()
 		args = append(args, p.parseExpression(LOWEST))
 	}
+
 	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
+
 	return args
 }

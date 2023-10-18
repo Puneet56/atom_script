@@ -113,6 +113,35 @@ func (as *AtomStatement) String() string {
 	return out.String()
 }
 
+type MoleculeStatement struct {
+	Token token.Token // the token.MOLECULE token
+	Name  *Identifier
+	Value Expression
+}
+
+func (ms *MoleculeStatement) statementNode() {}
+
+func (ms *MoleculeStatement) TokenLiteral() string {
+	return ms.Token.Literal
+}
+
+func (ms *MoleculeStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ms.TokenLiteral() + " ")
+
+	out.WriteString(ms.Name.String() + " ")
+	out.WriteString("=" + " ")
+
+	if ms.Value != nil {
+		out.WriteString(ms.Value.String())
+	}
+
+	out.WriteString(";")
+
+	return out.String()
+}
+
 type ProduceStatementStruct struct {
 	Token       token.Token
 	ReturnValue Expression
