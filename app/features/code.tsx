@@ -19,7 +19,7 @@ const CodeEditor = () => {
 		setOutput('Loading...');
 
 		axios
-			.post(process.env.NEXT_PUBLIC_API_URL + '/api/tokenize', code)
+			.post(process.env.NEXT_PUBLIC_API_URL + '/api/tokenize', { code })
 			.then(res => {
 				setOutput(JSON.stringify(res.data, null, 2));
 			})
@@ -32,9 +32,22 @@ const CodeEditor = () => {
 		setOutput('Loading...');
 
 		axios
-			.post(process.env.NEXT_PUBLIC_API_URL + '/api/parse', code)
+			.post(process.env.NEXT_PUBLIC_API_URL + '/api/parse', { code })
 			.then(res => {
 				setOutput(res.data.join('\n'));
+			})
+			.catch(err => {
+				setOutput(JSON.stringify(err.response.data, null, 2));
+			});
+	};
+
+	const evaluateCode = () => {
+		setOutput('Loading...');
+
+		axios
+			.post(process.env.NEXT_PUBLIC_API_URL + '/api/eval', { code })
+			.then(res => {
+				setOutput(JSON.stringify(res.data, null, 2));
 			})
 			.catch(err => {
 				setOutput(JSON.stringify(err.response.data, null, 2));
@@ -59,6 +72,10 @@ const CodeEditor = () => {
 
 						<Button onClick={parseCode} className="mt-8" disabled={code.length === 0}>
 							Parse
+						</Button>
+
+						<Button onClick={evaluateCode} className="mt-8" disabled={code.length === 0}>
+							Evaluate
 						</Button>
 					</div>
 				</div>

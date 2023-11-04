@@ -1,17 +1,21 @@
 package api
 
 import (
+	"atom_script/evaluator"
 	"atom_script/lexer"
 	"atom_script/parser"
 	"atom_script/token"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+type Code struct {
+	Code string `json:"code"`
+}
 
 func Init() {
 	e := echo.New()
@@ -33,6 +37,8 @@ func Init() {
 
 	e.POST("/api/tokenize", handleTokenize)
 	e.POST("/api/parse", handleParsing)
+	e.POST("/api/eval", handleEval)
+	e.POST("/api/repl", handleRepl)
 
 	port := os.Getenv("PORT")
 
@@ -44,20 +50,17 @@ func Init() {
 }
 
 func handleTokenize(c echo.Context) error {
-	body := c.Request().Body
-	defer body.Close()
+	var body Code
 
-	bodyBytes, err := io.ReadAll(body)
-
-	if err != nil {
+	if err := c.Bind(&body); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Invalid request body",
 		})
 	}
 
-	bodyString := string(bodyBytes)
+	codeString := body.Code
 
-	l := lexer.New(bodyString)
+	l := lexer.New(codeString)
 
 	tokens := make([]token.Token, 0)
 
@@ -71,20 +74,17 @@ func handleTokenize(c echo.Context) error {
 }
 
 func handleParsing(c echo.Context) error {
-	body := c.Request().Body
-	defer body.Close()
+	var body Code
 
-	bodyBytes, err := io.ReadAll(body)
-
-	if err != nil {
+	if err := c.Bind(&body); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Invalid request body",
 		})
 	}
 
-	bodyString := string(bodyBytes)
+	codeString := body.Code
 
-	l := lexer.New(bodyString)
+	l := lexer.New(codeString)
 
 	p := parser.New(l)
 
@@ -107,4 +107,74 @@ func handleParsing(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, resp)
+}
+
+func handleEval(c echo.Context) error {
+	var body Code
+
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Invalid request body",
+		})
+	}
+
+	codeString := body.Code
+
+	l := lexer.New(codeString)
+
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+
+	if len(p.Errors()) != 0 {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"errors": p.Errors(),
+		})
+	}
+
+	response := make([]string, 0)
+
+	for _, stmt := range program.Statements {
+		evaluated := evaluator.Eval(stmt)
+
+		if evaluated == nil {
+			response = append(response, "null")
+		}
+
+		response = append(response, evaluated.Inspect())
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
+func handleRepl(c echo.Context) error {
+	var body Code
+
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Invalid request body",
+		})
+	}
+
+	codeString := body.Code
+
+	l := lexer.New(codeString)
+
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+
+	if len(p.Errors()) != 0 {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"errors": p.Errors(),
+		})
+	}
+
+	evaluated := evaluator.Eval(program)
+
+	if evaluated == nil {
+		return c.JSON(http.StatusOK, "null")
+	}
+
+	return c.JSON(http.StatusOK, evaluated.Inspect())
 }

@@ -5,9 +5,10 @@ import "fmt"
 type ObjectType string
 
 const (
-	INTEGER_OBJ = "INTEGER"
-	BOOLEAN_OBJ = "BOOLEAN"
-	NULL_OBJ    = "NULL"
+	INTEGER_OBJ       = "INTEGER"
+	BOOLEAN_OBJ       = "BOOLEAN"
+	NULL_OBJ          = "NULL"
+	PRODUCE_VALUE_OBJ = "PRODUCE_VALUE_OBJ"
 )
 
 type Object interface {
@@ -16,12 +17,12 @@ type Object interface {
 }
 
 //Integer
-type Interger struct {
+type Integer struct {
 	Value int64
 }
 
-func (i *Interger) Type() ObjectType { return INTEGER_OBJ }
-func (i *Interger) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
+func (i *Integer) Type() ObjectType { return INTEGER_OBJ }
+func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 
 //Boolean
 type Boolean struct {
@@ -36,3 +37,10 @@ type Null struct{}
 
 func (n *Null) Type() ObjectType { return NULL_OBJ }
 func (n *Null) Inspect() string  { return "null" }
+
+type ProduceValue struct {
+	Value Object
+}
+
+func (p *ProduceValue) Type() ObjectType { return PRODUCE_VALUE_OBJ }
+func (p *ProduceValue) Inspect() string  { return p.Value.Inspect() }
