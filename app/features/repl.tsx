@@ -5,17 +5,32 @@ import Terminal, { ColorMode, TerminalOutput } from 'react-terminal-ui';
 
 const REPL = (props = {}) => {
 	const [terminalLineData, setTerminalLineData] = useState<React.ReactNode[]>([]);
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {}, []);
 
 	const executeCommand = async (input: string) => {
 		setLoading(true);
+		setTerminalLineData(prev => [
+			...prev,
+			<TerminalOutput>
+				<span>
+					{'>>'} {input}
+				</span>
+			</TerminalOutput>,
+		]);
 
 		try {
 			const { data } = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/eval', { code: input });
 			setTerminalLineData(prev => [...prev, <TerminalOutput>{data}</TerminalOutput>]);
 		} catch (error: any) {
-			if (error?.response?.data?.error) {
-				setTerminalLineData(prev => [...prev, <TerminalOutput>{error.response.data.error}</TerminalOutput>]);
+			if (error?.response?.data?.errors) {
+				setTerminalLineData(prev => [
+					...prev,
+					<TerminalOutput>{error.response.data.errors.join('\n')}</TerminalOutput>,
+				]);
+
+				return;
 			}
 			setTerminalLineData(prev => [...prev, <TerminalOutput>{error.message}</TerminalOutput>]);
 		} finally {
@@ -23,18 +38,29 @@ const REPL = (props = {}) => {
 		}
 	};
 
+	let output = terminalLineData;
+
 	if (loading) {
-		terminalLineData.push(
+		output = [
+			...output,
 			<TerminalOutput>
 				<TerminalLoader />
-			</TerminalOutput>
-		);
+			</TerminalOutput>,
+		];
 	}
 
 	return (
 		<div className="container">
-			<Terminal name="AtomScript REPL" colorMode={ColorMode.Dark} onInput={executeCommand}>
-				{terminalLineData}
+			<Terminal
+				prompt=">>"
+				name="AtomScript REPL"
+				colorMode={ColorMode.Dark}
+				onInput={executeCommand}
+				greenBtnCallback={() => setTerminalLineData([])}
+				redBtnCallback={() => setTerminalLineData([])}
+				yellowBtnCallback={() => setTerminalLineData([])}
+			>
+				{output}
 			</Terminal>
 		</div>
 	);

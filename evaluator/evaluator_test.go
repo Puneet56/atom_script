@@ -158,7 +158,9 @@ func testEval(input string) object.Object {
 
 	program := p.ParseProgram()
 
-	return Eval(program)
+	env := object.NewEnvironment()
+
+	return Eval(program, env)
 }
 
 func TestReturnStatements(t *testing.T) {
@@ -226,6 +228,10 @@ func TestErrorHandling(t *testing.T) {
 			}`,
 			"unknown operator: BOOLEAN + BOOLEAN",
 		},
+		{
+			"foobar",
+			"identifier not found: foobar",
+		},
 	}
 
 	for _, tt := range tests {
@@ -240,5 +246,21 @@ func TestErrorHandling(t *testing.T) {
 			t.Errorf("wrong error message. expected=%q, got=%q",
 				tt.expectedMessage, errObj.Message)
 		}
+	}
+}
+
+func TestAtomStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"atom a = 5; a;", 5},
+		{"atom a = 5 * 5; a;", 25},
+		{"atom a = 5; atom b = a; b;", 5},
+		{"atom a = 5; atom b = a; atom c = a + b + 5; c;", 15},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
 	}
 }

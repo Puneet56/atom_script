@@ -3,6 +3,7 @@ package api
 import (
 	"atom_script/evaluator"
 	"atom_script/lexer"
+	"atom_script/object"
 	"atom_script/parser"
 	"atom_script/token"
 	"fmt"
@@ -32,7 +33,7 @@ func Init() {
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
 	}))
 
 	e.POST("/api/tokenize", handleTokenize)
@@ -109,6 +110,8 @@ func handleParsing(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
+var env = object.NewEnvironment()
+
 func handleEval(c echo.Context) error {
 	var body Code
 
@@ -135,10 +138,11 @@ func handleEval(c echo.Context) error {
 	response := make([]string, 0)
 
 	for _, stmt := range program.Statements {
-		evaluated := evaluator.Eval(stmt)
+		evaluated := evaluator.Eval(stmt, env)
 
 		if evaluated == nil {
 			response = append(response, "null")
+			continue
 		}
 
 		response = append(response, evaluated.Inspect())
@@ -146,6 +150,8 @@ func handleEval(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, response)
 }
+
+var replEnv = object.NewEnvironment()
 
 func handleRepl(c echo.Context) error {
 	var body Code
@@ -155,6 +161,8 @@ func handleRepl(c echo.Context) error {
 			"error": "Invalid request body",
 		})
 	}
+
+	fmt.Println("body: ", body)
 
 	codeString := body.Code
 
@@ -170,11 +178,13 @@ func handleRepl(c echo.Context) error {
 		})
 	}
 
-	evaluated := evaluator.Eval(program)
+	evaluated := evaluator.Eval(program, replEnv)
 
 	if evaluated == nil {
 		return c.JSON(http.StatusOK, "null")
 	}
+
+	fmt.Println("evaluated: ", evaluated.Inspect())
 
 	return c.JSON(http.StatusOK, evaluated.Inspect())
 }
