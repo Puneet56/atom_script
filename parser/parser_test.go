@@ -188,9 +188,7 @@ func TestProduceStatement(t *testing.T) {
 		if produceStmt.TokenLiteral() != "produce" {
 			t.Errorf("token literal of statement is not produce. got=%q", produceStmt.TokenLiteral())
 		}
-
 	}
-
 }
 
 func TestIdentiferExpression(t *testing.T) {
@@ -265,6 +263,30 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	if literal.TokenLiteral() != "5" {
 		t.Errorf("literal.TokenLiteral not %s. got=%s", "5",
 			literal.TokenLiteral())
+	}
+}
+
+func TestStringLiteralExpression(t *testing.T) {
+	input := `"hello world";`
+
+	l := lexer.New(input)
+
+	p := New(l)
+
+	program := p.ParseProgram()
+
+	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+
+	if !ok {
+		t.Fatalf("exp not *ast.StringLiteral. got=%T", stmt.Expression)
+	}
+
+	if literal.Value != "hello world" {
+		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)
 	}
 }
 

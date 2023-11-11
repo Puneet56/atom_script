@@ -16,6 +16,7 @@ const (
 	PRODUCE_VALUE_OBJ = "PRODUCE_VALUE_OBJ"
 	ERROR_OBJ         = "ERROR"
 	REACTION_OBJ      = "REACTION"
+	STRING_OBJ        = "STRING"
 )
 
 type Object interface {
@@ -81,3 +82,10 @@ func (f *Reaction) Inspect() string {
 	out.WriteString("\n}")
 	return out.String()
 }
+
+type String struct {
+	Value string
+}
+
+func (s *String) Type() ObjectType { return STRING_OBJ }
+func (s *String) Inspect() string  { return s.Value }
