@@ -1,6 +1,11 @@
 package object
 
-import "fmt"
+import (
+	"atom_script/ast"
+	"bytes"
+	"fmt"
+	"strings"
+)
 
 type ObjectType string
 
@@ -10,6 +15,7 @@ const (
 	NULL_OBJ          = "NULL"
 	PRODUCE_VALUE_OBJ = "PRODUCE_VALUE_OBJ"
 	ERROR_OBJ         = "ERROR"
+	REACTION_OBJ      = "REACTION"
 )
 
 type Object interface {
@@ -17,7 +23,7 @@ type Object interface {
 	Inspect() string
 }
 
-//Integer
+// Integer
 type Integer struct {
 	Value int64
 }
@@ -25,7 +31,7 @@ type Integer struct {
 func (i *Integer) Type() ObjectType { return INTEGER_OBJ }
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 
-//Boolean
+// Boolean
 type Boolean struct {
 	Value bool
 }
@@ -33,7 +39,7 @@ type Boolean struct {
 func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
 func (b *Boolean) Inspect() string  { return fmt.Sprintf("%t", b.Value) }
 
-//Null
+// Null
 type Null struct{}
 
 func (n *Null) Type() ObjectType { return NULL_OBJ }
@@ -52,3 +58,26 @@ type Error struct {
 
 func (e *Error) Type() ObjectType { return ERROR_OBJ }
 func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
+
+type Reaction struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (f *Reaction) Type() ObjectType { return REACTION_OBJ }
+
+func (f *Reaction) Inspect() string {
+	var out bytes.Buffer
+	params := []string{}
+	for _, p := range f.Parameters {
+		params = append(params, p.String())
+	}
+	out.WriteString("reaction")
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") {\n")
+	out.WriteString(f.Body.String())
+	out.WriteString("\n}")
+	return out.String()
+}

@@ -264,3 +264,63 @@ func TestAtomStatements(t *testing.T) {
 		testIntegerObject(t, testEval(tt.input), tt.expected)
 	}
 }
+
+func TestMoleculeStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"molecule a = 5; a;", 5},
+		{"molecule a = 5 * 5; a;", 25},
+		{"molecule a = 5; atom b = a; b;", 5},
+		{"molecule a = 5; molecule b = a; molecule c = a + b + 5; c;", 15},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}
+
+func TestReactionObject(t *testing.T) {
+	input := "reaction(x) { x + 2; };"
+
+	evaluated := testEval(input)
+	fn, ok := evaluated.(*object.Reaction)
+
+	if !ok {
+		t.Fatalf("object is not Function. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	if len(fn.Parameters) != 1 {
+		t.Fatalf("function has wrong parameters. Parameters=%+v",
+			fn.Parameters)
+	}
+
+	if fn.Parameters[0].String() != "x" {
+		t.Fatalf("parameter is not 'x'. got=%q", fn.Parameters[0])
+	}
+
+	expectedBody := "(x + 2)"
+
+	if fn.Body.String() != expectedBody {
+		t.Fatalf("body is not %q. got=%q", expectedBody, fn.Body.String())
+	}
+}
+
+func TestReactionApplication(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"atom identity = reaction(x) { x; }; identity(5);", 5},
+		{"molecule identity = reaction(x) { produce x; }; identity(5);", 5},
+		{"atom double = reaction(x) { x * 2; }; double(5);", 10},
+		{"molecule add = reaction(x, y) { x + y; }; add(5, 5);", 10},
+		{"atom add = reaction(x, y) { x + y; }; add(5 + 5, add(5, 5));", 20},
+		{"reaction(x) { x; }(5)", 5},
+	}
+
+	for _, tt := range tests {
+		testIntegerObject(t, testEval(tt.input), tt.expected)
+	}
+}

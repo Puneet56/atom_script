@@ -666,7 +666,7 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
-func TestFunctionLiteralParsing(t *testing.T) {
+func TestReactionLiteralParsing(t *testing.T) {
 	input := `reaction(x, y) { x + y; }`
 	l := lexer.New(input)
 	p := New(l)
@@ -681,9 +681,9 @@ func TestFunctionLiteralParsing(t *testing.T) {
 		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
 			program.Statements[0])
 	}
-	function, ok := stmt.Expression.(*ast.FunctionLiteral)
+	function, ok := stmt.Expression.(*ast.ReactionLiteral)
 	if !ok {
-		t.Fatalf("stmt.Expression is not ast.FunctionLiteral. got=%T",
+		t.Fatalf("stmt.Expression is not ast.ReactionLiteral. got=%T",
 			stmt.Expression)
 	}
 	if len(function.Parameters) != 2 {
@@ -704,7 +704,7 @@ func TestFunctionLiteralParsing(t *testing.T) {
 	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
 }
 
-func TestFunctionParameterParsing(t *testing.T) {
+func TestReactionParameterParsing(t *testing.T) {
 	tests := []struct {
 		input          string
 		expectedParams []string
@@ -719,7 +719,7 @@ func TestFunctionParameterParsing(t *testing.T) {
 		program := p.ParseProgram()
 		checkParserErrors(t, p)
 		stmt := program.Statements[0].(*ast.ExpressionStatement)
-		function := stmt.Expression.(*ast.FunctionLiteral)
+		function := stmt.Expression.(*ast.ReactionLiteral)
 		if len(function.Parameters) != len(tt.expectedParams) {
 			t.Errorf("length parameters wrong. want %d, got=%d\n",
 				len(tt.expectedParams), len(function.Parameters))
