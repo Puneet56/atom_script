@@ -22,7 +22,10 @@ const REPL = (props = {}) => {
 
 		try {
 			const { data } = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/eval', { code: input });
-			setTerminalLineData(prev => [...prev, <TerminalOutput>{data}</TerminalOutput>]);
+			setTerminalLineData(prev => [
+				...prev,
+				...data.map((line: string) => <TerminalOutput key={Math.random()}>{line}</TerminalOutput>),
+			]);
 		} catch (error: any) {
 			if (error?.response?.data?.errors) {
 				setTerminalLineData(prev => [
