@@ -28,6 +28,9 @@ const (
 	EQ       = "=="
 	NOT_EQ   = "!="
 
+	LBRACKET = "["
+	RBRACKET = "]"
+
 	// Delimiters
 	COMMA     = ","
 	SEMICOLON = ";"
