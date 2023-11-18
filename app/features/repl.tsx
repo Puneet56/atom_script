@@ -1,7 +1,9 @@
 'use client';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import Terminal, { ColorMode, TerminalOutput } from 'react-terminal-ui';
+
+import Terminal, { ColorMode, TerminalOutput } from '@/components/terminal';
+import { getHighlightedCodeHtmlString } from '@/lib/highlight-code';
 
 const REPL = (props = {}) => {
 	const [terminalLineData, setTerminalLineData] = useState<React.ReactNode[]>([]);
@@ -10,15 +12,17 @@ const REPL = (props = {}) => {
 	useEffect(() => {}, []);
 
 	const executeCommand = async (input: string) => {
-		setLoading(true);
+		// setLoading(true);
+
+		let key = Math.random();
 		setTerminalLineData(prev => [
 			...prev,
-			<TerminalOutput>
-				<span>
-					{'>>'} {input}
-				</span>
+			<TerminalOutput key={key}>
+				<span dangerouslySetInnerHTML={{ __html: getHighlightedCodeHtmlString(input) }}></span>
 			</TerminalOutput>,
 		]);
+
+		return;
 
 		try {
 			const { data } = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/eval', { code: input });
