@@ -1,6 +1,9 @@
 package evaluator
 
-import "atom_script/object"
+import (
+	"atom_script/object"
+	"bytes"
+)
 
 var builtins = map[string]*object.Builtin{
 	"len": {
@@ -20,6 +23,21 @@ var builtins = map[string]*object.Builtin{
 			default:
 				return newError("argument to `len` not supported, got %s",
 					args[0].Type())
+			}
+		},
+	},
+
+	"puts": {
+		Fn: func(args ...object.Object) object.Object {
+			out := bytes.Buffer{}
+
+			for _, arg := range args {
+				out.WriteString(arg.Inspect())
+				out.WriteString(", ")
+			}
+
+			return &object.String{
+				Value: "puts : " + out.String(),
 			}
 		},
 	},
@@ -86,7 +104,7 @@ var builtins = map[string]*object.Builtin{
 			length := len(arr.Elements)
 
 			if length > 0 {
-				newElements := make([]object.Object, length-1, length-1)
+				newElements := make([]object.Object, length-1)
 				copy(newElements, arr.Elements[1:length])
 				return &object.Array{Elements: newElements}
 			}
@@ -110,7 +128,7 @@ var builtins = map[string]*object.Builtin{
 			arr := args[0].(*object.Array)
 			length := len(arr.Elements)
 
-			newElements := make([]object.Object, length+1, length+1)
+			newElements := make([]object.Object, length+1)
 
 			copy(newElements, arr.Elements)
 

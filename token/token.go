@@ -38,6 +38,7 @@ const (
 	RPAREN    = ")"
 	LBRACE    = "{"
 	RBRACE    = "}"
+	COLON     = ":"
 
 	// Keywords
 	ATOM     = "ATOM"
