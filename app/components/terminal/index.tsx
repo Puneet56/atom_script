@@ -128,7 +128,7 @@ const Terminal = ({
 		};
 	}, [onInput]);
 
-	const classes = ['react-terminal-wrapper'];
+	const classes = ['react-terminal-wrapper', 'font-mono'];
 	if (colorMode === ColorMode.Light) {
 		classes.push('react-terminal-light');
 	}

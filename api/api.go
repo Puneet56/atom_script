@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -47,7 +48,7 @@ func Init() {
 		port = "1323"
 	}
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", port)))
+	e.Logger.Fatal(e.Start(fmt.Sprintf("localhost:%s", port)))
 }
 
 func handleTokenize(c echo.Context) error {
@@ -110,10 +111,27 @@ func handleParsing(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
+var envMap = make(map[string]*object.Environment)
 var env = object.NewEnvironment()
 
 func handleEval(c echo.Context) error {
 	var body Code
+
+	cookie, err := c.Cookie("session_id")
+
+	if err != nil {
+		fmt.Println("No cookie found")
+
+		c.SetCookie(&http.Cookie{
+			Name:    "session_id",
+			Value:   "test",
+			Expires: time.Now().Add(24 * time.Hour),
+			Path:    "/",
+		})
+
+	} else {
+		fmt.Println("Cookie found: ", cookie.Value)
+	}
 
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{

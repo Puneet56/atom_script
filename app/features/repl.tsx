@@ -1,31 +1,28 @@
 'use client';
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 import Terminal, { ColorMode, TerminalOutput } from '@/components/terminal';
 import { getHighlightedCodeHtmlString } from '@/lib/highlight-code';
+import services from '@/services';
 
-const REPL = (props = {}) => {
+const REPL = () => {
 	const [terminalLineData, setTerminalLineData] = useState<React.ReactNode[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {}, []);
 
 	const executeCommand = async (input: string) => {
-		// setLoading(true);
+		setLoading(true);
 
-		let key = Math.random();
 		setTerminalLineData(prev => [
 			...prev,
-			<TerminalOutput key={key}>
-				<span dangerouslySetInnerHTML={{ __html: getHighlightedCodeHtmlString(input) }}></span>
+			<TerminalOutput key={Math.random()}>
+				<span dangerouslySetInnerHTML={{ __html: '>> ' + getHighlightedCodeHtmlString(input) }}></span>
 			</TerminalOutput>,
 		]);
 
-		return;
-
 		try {
-			const { data } = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/eval', { code: input });
+			const { data } = await services.evaluateCode(input);
 			setTerminalLineData(prev => [
 				...prev,
 				...data.map((line: string) => <TerminalOutput key={Math.random()}>{line}</TerminalOutput>),
@@ -34,12 +31,12 @@ const REPL = (props = {}) => {
 			if (error?.response?.data?.errors) {
 				setTerminalLineData(prev => [
 					...prev,
-					<TerminalOutput>{error.response.data.errors.join('\n')}</TerminalOutput>,
+					<TerminalOutput key={Math.random()}>{error.response.data.errors.join('\n')}</TerminalOutput>,
 				]);
 
 				return;
 			}
-			setTerminalLineData(prev => [...prev, <TerminalOutput>{error.message}</TerminalOutput>]);
+			setTerminalLineData(prev => [...prev, <TerminalOutput key={Math.random()}>{error.message}</TerminalOutput>]);
 		} finally {
 			setLoading(false);
 		}
@@ -50,7 +47,7 @@ const REPL = (props = {}) => {
 	if (loading) {
 		output = [
 			...output,
-			<TerminalOutput>
+			<TerminalOutput key={Math.random()}>
 				<TerminalLoader />
 			</TerminalOutput>,
 		];

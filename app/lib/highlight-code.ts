@@ -2,7 +2,7 @@ import Prism from 'prismjs';
 
 const atomScriptGrammer: Prism.Grammar = {
 	keyword: /\b(atom|molecule|reaction|true|false|if|else|produce)\b/,
-	function: /\b(reaction)\b/,
+	function: /\b(reaction|puts|len|first|last|rest|push)\b/,
 	string: /(")(\\?.)*?\1/,
 	operator: /(\+|-|\*|\/|==|!=|>|<|>=|<=)/,
 	number: /\b(\d*\.?\d+)\b/,
