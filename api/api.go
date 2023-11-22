@@ -7,6 +7,7 @@ import (
 	"atom_script/parser"
 	"atom_script/token"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
@@ -16,6 +17,16 @@ import (
 
 type Code struct {
 	Code string `json:"code"`
+}
+
+func logOutput() io.Writer {
+	file, err := os.OpenFile("logs.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+	if err != nil {
+		return os.Stdout
+	}
+
+	return file
 }
 
 func Init() {
@@ -28,6 +39,7 @@ func Init() {
 	e.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{
 			Format: "method=${method}, uri=${uri}, status=${status}\n",
+			Output: logOutput(),
 		},
 	))
 
@@ -42,13 +54,15 @@ func Init() {
 	e.POST("/api/eval", handleEval)
 	e.POST("/api/repl", handleRepl)
 
-	port := os.Getenv("PORT")
+	port := "1323"
 
-	if port == "" {
-		port = "1323"
-	}
+	// if port == "" {
+	// 	port = "1323"
+	// }
 
-	e.Logger.Fatal(e.Start(fmt.Sprintf("localhost:%s", port)))
+	e.Logger.Printf("Starting server started on port %s", port)
+
+	e.Logger.Fatal(e.Start(fmt.Sprintf("0.0.0.0:%s", port)))
 }
 
 func handleTokenize(c echo.Context) error {
