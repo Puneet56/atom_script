@@ -20,9 +20,9 @@ func main() {
 	}
 
 	switch args[0] {
-	case "--api":
-		fmt.Println("Starting API server...")
-		api.Init()
+	case "--repl":
+		repl.Start()
+
 	case "--file":
 		if len(args) < 2 {
 			fmt.Println("Please provide a file to run")
@@ -33,7 +33,8 @@ func main() {
 		evalFile(args[1])
 
 	default:
-		repl.Start()
+		fmt.Println("Starting API server...")
+		api.Init()
 	}
 }
 
