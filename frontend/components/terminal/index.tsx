@@ -1,3 +1,5 @@
+'use client';
+
 import { getHighlightedCodeHtmlString } from '@/lib/highlight-code';
 import React, { ChangeEvent, KeyboardEvent, PropsWithChildren, ReactNode, useEffect, useRef, useState } from 'react';
 import './style.css';
@@ -100,7 +102,7 @@ const Terminal = ({
 	useEffect(() => {
 		if (performScrolldown.current) {
 			// skip scrolldown when the component first loads
-			setTimeout(() => scrollIntoViewRef?.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' }), 500);
+			// setTimeout(() => scrollIntoViewRef?.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' }), 500);
 		}
 		performScrolldown.current = true;
 	}, [children]);
@@ -132,6 +134,7 @@ const Terminal = ({
 	if (colorMode === ColorMode.Light) {
 		classes.push('react-terminal-light');
 	}
+
 	return (
 		<div className={classes.join(' ')} data-terminal-name={name}>
 			<div className="react-terminal-window-buttons">

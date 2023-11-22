@@ -5,7 +5,7 @@ import Terminal, { ColorMode, TerminalOutput } from '@/components/terminal';
 import { getHighlightedCodeHtmlString } from '@/lib/highlight-code';
 import services from '@/services';
 
-const REPL = () => {
+const REPL = ({ height = '300px' }) => {
 	const [terminalLineData, setTerminalLineData] = useState<React.ReactNode[]>([]);
 	const [loading, setLoading] = useState(false);
 
@@ -56,6 +56,7 @@ const REPL = () => {
 	return (
 		<div className="container">
 			<Terminal
+				height={height}
 				prompt=">>"
 				name="AtomScript REPL"
 				colorMode={ColorMode.Dark}
@@ -63,6 +64,7 @@ const REPL = () => {
 				greenBtnCallback={() => setTerminalLineData([])}
 				redBtnCallback={() => setTerminalLineData([])}
 				yellowBtnCallback={() => setTerminalLineData([])}
+				startingInputValue='puts("Hello world")'
 			>
 				{output}
 			</Terminal>

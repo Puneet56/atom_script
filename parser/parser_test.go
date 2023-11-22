@@ -734,6 +734,50 @@ func TestReactionLiteralParsing(t *testing.T) {
 	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
 }
 
+func TestReactionStatementParsing(t *testing.T) {
+	input := `reaction add(x, y) { x + y; }`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Body does not contain %d statements. got=%d\n",
+			1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ReactionStatement)
+
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ReactionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	if !testLiteralExpression(t, stmt.Name, "add") {
+		return
+	}
+
+	if len(stmt.Parameters) != 2 {
+		t.Fatalf("reaction literal parameters wrong. want 2, got=%d\n",
+			len(stmt.Parameters))
+	}
+
+	testLiteralExpression(t, stmt.Parameters[0], "x")
+	testLiteralExpression(t, stmt.Parameters[1], "y")
+
+	if len(stmt.Body.Statements) != 1 {
+		t.Fatalf("reaction.Body.Statements has not 1 statements. got=%d\n",
+			len(stmt.Body.Statements))
+	}
+	bodyStmt, ok := stmt.Body.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("reaction body stmt is not ast.ExpressionStatement.  got=%T", stmt.Body.Statements[0])
+	}
+
+	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
+}
+
 func TestReactionParameterParsing(t *testing.T) {
 	tests := []struct {
 		input          string

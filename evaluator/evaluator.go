@@ -25,6 +25,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.Program:
 		return evalProgram(node.Statements, env)
 
+	case *ast.ReactionStatement:
+		rl := &ast.ReactionLiteral{Parameters: node.Parameters, Body: node.Body}
+		env.Set(node.Name.Value, Eval(rl, env))
+
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression, env)
 
@@ -268,6 +272,11 @@ func evalProgram(stmts []ast.Statement, env *object.Environment) object.Object {
 
 	return result
 }
+
+// func evalReactionStatement(rs *ast.ReactionStatement, env *object.Environment) {
+// 	reaction := &object.Reaction{Parameters: rs.Parameters, Body: rs.Body, Env: env}
+// 	env.Set(rs.Name.Value, reaction)
+// }
 
 func evalPrefixExpression(operator string, right object.Object) object.Object {
 	switch operator {

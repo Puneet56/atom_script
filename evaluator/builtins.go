@@ -37,7 +37,7 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			return &object.String{
-				Value: "puts : " + out.String(),
+				Value: out.String(),
 			}
 		},
 	},

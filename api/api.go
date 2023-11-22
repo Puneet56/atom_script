@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -40,7 +39,6 @@ func Init() {
 	e.POST("/api/tokenize", handleTokenize)
 	e.POST("/api/parse", handleParsing)
 	e.POST("/api/eval", handleEval)
-	e.POST("/api/repl", handleRepl)
 
 	port := os.Getenv("PORT")
 
@@ -117,22 +115,6 @@ var env = object.NewEnvironment()
 func handleEval(c echo.Context) error {
 	var body Code
 
-	cookie, err := c.Cookie("session_id")
-
-	if err != nil {
-		fmt.Println("No cookie found")
-
-		c.SetCookie(&http.Cookie{
-			Name:    "session_id",
-			Value:   "test",
-			Expires: time.Now().Add(24 * time.Hour),
-			Path:    "/",
-		})
-
-	} else {
-		fmt.Println("Cookie found: ", cookie.Value)
-	}
-
 	if err := c.Bind(&body); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Invalid request body",
@@ -167,42 +149,4 @@ func handleEval(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
-}
-
-var replEnv = object.NewEnvironment()
-
-func handleRepl(c echo.Context) error {
-	var body Code
-
-	if err := c.Bind(&body); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Invalid request body",
-		})
-	}
-
-	fmt.Println("body: ", body)
-
-	codeString := body.Code
-
-	l := lexer.New(codeString)
-
-	p := parser.New(l)
-
-	program := p.ParseProgram()
-
-	if len(p.Errors()) != 0 {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"errors": p.Errors(),
-		})
-	}
-
-	evaluated := evaluator.Eval(program, replEnv)
-
-	if evaluated == nil {
-		return c.JSON(http.StatusOK, "null")
-	}
-
-	fmt.Println("evaluated: ", evaluated.Inspect())
-
-	return c.JSON(http.StatusOK, evaluated.Inspect())
 }

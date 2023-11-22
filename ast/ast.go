@@ -306,6 +306,33 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+type ReactionStatement struct {
+	Name *Identifier
+	*ReactionLiteral
+}
+
+func (rs *ReactionStatement) statementNode() {}
+func (rs *ReactionStatement) TokenLiteral() string {
+	return rs.Token.Literal
+}
+func (rs *ReactionStatement) String() string {
+	var out bytes.Buffer
+
+	params := []string{}
+	for _, p := range rs.Parameters {
+		params = append(params, p.String())
+	}
+
+	out.WriteString(rs.TokenLiteral() + " ")
+	out.WriteString(rs.Name.String())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") ")
+	out.WriteString(rs.Body.String())
+
+	return out.String()
+}
+
 type ReactionLiteral struct {
 	Token      token.Token // The 'reaction' token
 	Parameters []*Identifier

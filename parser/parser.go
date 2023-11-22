@@ -131,6 +131,12 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch p.curToken.Type {
 	case token.ATOM:
 		return p.parseAtomStatement()
+	case token.REACTION:
+		if p.peekTokenIs(token.IDENT) {
+			return p.parseReactionStatement()
+		}
+
+		return p.parseExpressionStatement()
 	case token.PRODUCE:
 		return p.praseProduceStatement()
 	case token.MOLECULE:
@@ -210,6 +216,37 @@ func (p *Parser) praseProduceStatement() *ast.ProduceStatementStruct {
 	if p.peekTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}
+
+	return stmt
+}
+
+func (p *Parser) parseReactionStatement() *ast.ReactionStatement {
+	stmt := &ast.ReactionStatement{
+		ReactionLiteral: &ast.ReactionLiteral{
+			Token: p.curToken,
+		},
+	}
+
+	if !p.expectPeek(token.IDENT) {
+		return nil
+	}
+
+	stmt.Name = &ast.Identifier{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	stmt.Parameters = p.parseReactionParameters()
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	stmt.Body = p.parseBlockStatement()
 
 	return stmt
 }

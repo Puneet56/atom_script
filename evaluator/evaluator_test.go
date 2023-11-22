@@ -315,6 +315,16 @@ func TestReactionObject(t *testing.T) {
 	}
 }
 
+func TestReactionStatements(t *testing.T) {
+	input := `
+	reaction identity(x) { x; };
+	identity(5);
+	`
+
+	evaluated := testEval(input)
+	testIntegerObject(t, evaluated, 5)
+}
+
 func TestReactionApplication(t *testing.T) {
 	tests := []struct {
 		input    string
