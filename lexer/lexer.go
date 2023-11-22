@@ -7,7 +7,7 @@ type Lexer struct {
 	input        string // input string to be tokenized
 	position     int    // current position in input (points to current char)
 	readPosition int    // current reading position in input (after current char)
-	ch           byte   // current char under examination (ASCII only) complete list of ASCII codes: https://www.asciitable.com/
+	ch           byte   // current char under examination (ASCII only)
 }
 
 // New creates a new Lexer and initializes it with the input string.
@@ -163,9 +163,11 @@ func isDigit(ch byte) bool {
 
 func (l *Lexer) readNumber() string {
 	position := l.position // position is the current position
+
 	for isDigit(l.ch) {
 		l.readChar()
 	}
+
 	return l.input[position:l.position]
 }
 

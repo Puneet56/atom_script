@@ -51,6 +51,7 @@ func (p *Program) String() string {
 }
 
 type Identifier struct {
+	Type        string
 	token.Token // the token.IDENT token
 	Value       string
 }
@@ -66,6 +67,7 @@ func (i *Identifier) String() string {
 }
 
 type ExpressionStatement struct {
+	Type       string
 	Token      token.Token
 	Expression Expression
 }
@@ -85,6 +87,7 @@ func (es *ExpressionStatement) String() string {
 }
 
 type AtomStatement struct {
+	Type  string
 	Token token.Token // the token.ATOM token
 	Name  *Identifier
 	Value Expression
@@ -114,6 +117,7 @@ func (as *AtomStatement) String() string {
 }
 
 type MoleculeStatement struct {
+	Type  string
 	Token token.Token // the token.MOLECULE token
 	Name  *Identifier
 	Value Expression
@@ -143,6 +147,7 @@ func (ms *MoleculeStatement) String() string {
 }
 
 type ProduceStatementStruct struct {
+	Type        string
 	Token       token.Token
 	ReturnValue Expression
 }
@@ -168,6 +173,7 @@ func (ps *ProduceStatementStruct) String() string {
 }
 
 type IntegerLiteral struct {
+	Type  string
 	Token token.Token
 	Value int64
 }
@@ -183,6 +189,7 @@ func (il *IntegerLiteral) String() string {
 }
 
 type StringLiteral struct {
+	Type  string
 	Token token.Token
 	Value string
 }
@@ -198,6 +205,7 @@ func (sl *StringLiteral) String() string {
 }
 
 type PrefixExpression struct {
+	Type     string
 	Token    token.Token
 	Operator string
 	Right    Expression
@@ -221,6 +229,7 @@ func (pe *PrefixExpression) String() string {
 }
 
 type InfixExpression struct {
+	Type     string
 	Token    token.Token
 	Left     Expression
 	Operator string
@@ -246,6 +255,7 @@ func (inf *InfixExpression) String() string {
 }
 
 type Boolean struct {
+	Type  string
 	Token token.Token
 	Value bool
 }
@@ -261,6 +271,7 @@ func (b *Boolean) String() string {
 }
 
 type BlockStatement struct {
+	Type       string
 	Token      token.Token // the { token
 	Statements []Statement
 }
@@ -278,6 +289,7 @@ func (bs *BlockStatement) String() string {
 }
 
 type IfExpression struct {
+	Type        string
 	Token       token.Token
 	Condition   Expression
 	Consequence *BlockStatement
@@ -307,6 +319,7 @@ func (ie *IfExpression) String() string {
 }
 
 type ReactionStatement struct {
+	Type string
 	Name *Identifier
 	*ReactionLiteral
 }
@@ -334,6 +347,7 @@ func (rs *ReactionStatement) String() string {
 }
 
 type ReactionLiteral struct {
+	Type       string
 	Token      token.Token // The 'reaction' token
 	Parameters []*Identifier
 	Body       *BlockStatement
@@ -359,6 +373,7 @@ func (fl *ReactionLiteral) String() string {
 }
 
 type CallExpression struct {
+	Type      string
 	Token     token.Token // The '(' token
 	Function  Expression  // Identifier or ReactionLiteral
 	Arguments []Expression
@@ -383,6 +398,7 @@ func (ce *CallExpression) String() string {
 }
 
 type ArrayLiteral struct {
+	Type     string
 	Token    token.Token // The '[' token
 	Elements []Expression
 }
@@ -406,6 +422,7 @@ func (al *ArrayLiteral) String() string {
 }
 
 type IndexExpression struct {
+	Type  string
 	Token token.Token // The '[' token
 	Left  Expression
 	Index Expression
@@ -428,6 +445,7 @@ func (ie *IndexExpression) String() string {
 }
 
 type HashLiteral struct {
+	Type  string
 	Token token.Token // The '{' token
 	Pairs map[Expression]Expression
 }

@@ -3,6 +3,7 @@ import { HomeRepl, TryNow } from '@/components/terminal/home-repl';
 import { Button } from '@/components/ui/button';
 import { getHighlightedCodeHtmlString } from '@/lib/highlight-code';
 import { LucideGithub } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Home() {
 	return (
@@ -27,6 +28,12 @@ export default function Home() {
 						</Button>
 
 						<TryNow />
+
+						<Button className="gap-2" variant={'ghost'}>
+							<Link href={'/code-editor'} className="flex items-center justify-center gap-2">
+								Take a deep dive
+							</Link>
+						</Button>
 					</div>
 				</div>
 

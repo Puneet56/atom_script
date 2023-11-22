@@ -2,24 +2,31 @@
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import services from '@/services';
+import { useState } from 'react';
 
 const CodeEditor = () => {
 	const [code, setCode] = useState('');
 	const [output, setOutput] = useState('');
 
-	useEffect(() => {
-		axios.get(process.env.NEXT_PUBLIC_API_URL!).then(res => {
-			console.log(res.data);
-		});
-	}, []);
-
 	const tokenizeCode = () => {
 		setOutput('Loading...');
 
-		axios
-			.post(process.env.NEXT_PUBLIC_API_URL + '/api/tokenize', { code })
+		services
+			.tokenizeCode(code)
+			.then(res => {
+				setOutput(JSON.stringify(res.data, null, 2));
+			})
+			.catch(err => {
+				setOutput(JSON.stringify(err.response.data, null, 2));
+			});
+	};
+
+	const generateAst = () => {
+		setOutput('Loading...');
+
+		services
+			.generateAst(code)
 			.then(res => {
 				setOutput(JSON.stringify(res.data, null, 2));
 			})
@@ -31,8 +38,8 @@ const CodeEditor = () => {
 	const parseCode = () => {
 		setOutput('Loading...');
 
-		axios
-			.post(process.env.NEXT_PUBLIC_API_URL + '/api/parse', { code })
+		services
+			.parseCode(code)
 			.then(res => {
 				setOutput(res.data.join('\n'));
 			})
@@ -44,8 +51,8 @@ const CodeEditor = () => {
 	const evaluateCode = () => {
 		setOutput('Loading...');
 
-		axios
-			.post(process.env.NEXT_PUBLIC_API_URL + '/api/eval', { code })
+		services
+			.evaluateCode(code)
 			.then(res => {
 				setOutput(JSON.stringify(res.data, null, 2));
 			})
@@ -55,10 +62,10 @@ const CodeEditor = () => {
 	};
 
 	return (
-		<div className="flex w-full flex-col items-center gap-8">
+		<div className="mt-12 flex w-full flex-col items-center gap-8">
 			<div className="flex w-full items-start justify-evenly gap-8 px-8">
 				<div className="w-full">
-					<p className="mb-4">Atom script code</p>
+					<p className="mb-4">AtomScript code</p>
 					<Textarea
 						value={code}
 						onChange={e => setCode(e.target.value)}
@@ -68,6 +75,10 @@ const CodeEditor = () => {
 					<div className="flex gap-4 px-4">
 						<Button onClick={tokenizeCode} className="mt-8" disabled={code.length === 0}>
 							Tokenize
+						</Button>
+
+						<Button onClick={generateAst} className="mt-8" disabled={code.length === 0}>
+							Generate AST
 						</Button>
 
 						<Button onClick={parseCode} className="mt-8" disabled={code.length === 0}>

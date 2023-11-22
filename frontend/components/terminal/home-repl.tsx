@@ -24,13 +24,7 @@ export const HomeRepl = () => {
 export const TryNow = () => {
 	return (
 		<Button className="gap-2" onClick={() => eventBus.publish('repl:trynow')}>
-			<a
-				href="https://github.com/Puneet56/atom_script"
-				target="_blank"
-				className="flex items-center justify-center gap-2"
-			>
-				Try now!
-			</a>
+			Try now!
 		</Button>
 	);
 };

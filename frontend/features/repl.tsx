@@ -5,9 +5,16 @@ import Terminal, { ColorMode, TerminalOutput } from '@/components/terminal';
 import { getHighlightedCodeHtmlString } from '@/lib/highlight-code';
 import services from '@/services';
 
+export type CodeBlock = {
+	code: string;
+	isExecuted: boolean;
+};
+
 const REPL = ({ height = '300px' }) => {
 	const [terminalLineData, setTerminalLineData] = useState<React.ReactNode[]>([]);
 	const [loading, setLoading] = useState(false);
+
+	const [code, setCode] = useState<CodeBlock[]>([]);
 
 	useEffect(() => {}, []);
 
@@ -21,12 +28,28 @@ const REPL = ({ height = '300px' }) => {
 			</TerminalOutput>,
 		]);
 
+		if (!input.endsWith(';')) {
+			input = input + ';';
+		}
+
+		let payload = [...code, { code: input, isExecuted: false }];
+
 		try {
-			const { data } = await services.evaluateCode(input);
+			const { data } = await services.evaluateRepl(payload);
 			setTerminalLineData(prev => [
 				...prev,
 				...data.map((line: string) => <TerminalOutput key={Math.random()}>{line}</TerminalOutput>),
 			]);
+
+			payload = payload.map((block, i) => {
+				if (i === payload.length - 1) {
+					return { ...block, isExecuted: true };
+				} else {
+					return block;
+				}
+			});
+
+			setCode(payload);
 		} catch (error: any) {
 			if (error?.response?.data?.errors) {
 				setTerminalLineData(prev => [

@@ -37,8 +37,10 @@ func Init() {
 	}))
 
 	e.POST("/api/tokenize", handleTokenize)
+	e.POST("/api/ast", handleGenerateAst)
 	e.POST("/api/parse", handleParsing)
 	e.POST("/api/eval", handleEval)
+	e.POST("/api/repl", handleRepl)
 
 	port := os.Getenv("PORT")
 
@@ -70,6 +72,34 @@ func handleTokenize(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"tokens": tokens,
+	})
+}
+
+func handleGenerateAst(c echo.Context) error {
+	var body Code
+
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Invalid request body",
+		})
+	}
+
+	codeString := body.Code
+
+	l := lexer.New(codeString)
+
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+
+	if len(p.Errors()) != 0 {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"errors": p.Errors(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"ast": program,
 	})
 }
 
@@ -109,7 +139,6 @@ func handleParsing(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
-var envMap = make(map[string]*object.Environment)
 var env = object.NewEnvironment()
 
 func handleEval(c echo.Context) error {
@@ -146,6 +175,59 @@ func handleEval(c echo.Context) error {
 		}
 
 		response = append(response, evaluated.Inspect())
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
+type CodeBlock struct {
+	Code       string `json:"code"`
+	IsExecuted bool   `json:"isExecuted"`
+}
+
+type ReplCode struct {
+	Code []CodeBlock `json:"code"`
+}
+
+func handleRepl(c echo.Context) error {
+	var body ReplCode
+
+	if err := c.Bind(&body); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Invalid request body",
+		})
+	}
+
+	response := make([]string, 0)
+
+	env := object.NewEnvironment()
+	for _, codeBlock := range body.Code {
+
+		codeString := codeBlock.Code
+
+		l := lexer.New(codeString)
+
+		p := parser.New(l)
+
+		program := p.ParseProgram()
+
+		if len(p.Errors()) != 0 {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"errors": p.Errors(),
+			})
+		}
+
+		for _, stmt := range program.Statements {
+			evaluated := evaluator.Eval(stmt, env)
+
+			if evaluated == nil {
+				continue
+			}
+
+			if !codeBlock.IsExecuted {
+				response = append(response, evaluated.Inspect())
+			}
+		}
 	}
 
 	return c.JSON(http.StatusOK, response)
