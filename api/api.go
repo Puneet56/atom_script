@@ -54,11 +54,11 @@ func Init() {
 	e.POST("/api/eval", handleEval)
 	e.POST("/api/repl", handleRepl)
 
-	port := "1323"
+	port := os.Getenv("PORT")
 
-	// if port == "" {
-	// 	port = "1323"
-	// }
+	if port == "" {
+		port = "1323"
+	}
 
 	e.Logger.Printf("Starting server started on port %s", port)
 
