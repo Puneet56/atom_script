@@ -15,13 +15,13 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) == 0 {
-		api.Init()
+		repl.Start()
 		return
 	}
 
 	switch args[0] {
-	case "--repl":
-		repl.Start()
+	case "--api":
+		api.Init()
 
 	case "--file":
 		if len(args) < 2 {
@@ -34,7 +34,7 @@ func main() {
 
 	default:
 		fmt.Println("Starting API server...")
-		api.Init()
+		repl.Start()
 	}
 }
 

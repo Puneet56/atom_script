@@ -19,7 +19,7 @@ class CodeService {
 	}
 
 	async evaluateCode(code: string) {
-		return axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/repl', { code });
+		return axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/eval', { code });
 	}
 
 	async evaluateRepl(code: CodeBlock[]) {

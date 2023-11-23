@@ -49,8 +49,9 @@ export default function Home() {
 							code={[
 								'atom sodium = "Na";',
 								'atom chlorine = "Cl";',
-								`reaction getSalt(metal, halogen) {\n  produce metal + halogen;\n};`,
+								`reaction getSalt(metal, halogen) {\n  produce metal + halogen;\n}`,
 								`molecule salt = getSalt(sodium, chlorine);`,
+								`salt`,
 							]}
 						/>
 					</div>
@@ -133,7 +134,7 @@ export default function Home() {
 
 					<div className="w-full">
 						<TerminalCard
-							code={['atom baseWeight = 30', `reaction getWeight(weight) {\n  produce weight + baseWeight;\n};`]}
+							code={['atom baseWeight = 30', `reaction getWeight(weight) {\n  produce weight + baseWeight;\n}`]}
 						/>
 					</div>
 				</div>
