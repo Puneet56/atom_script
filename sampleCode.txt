@@ -1,33 +1,3 @@
-# AtomScript
-
-### Tiny Code, Big Reactions!
-
-## Installation and running
-
-- Make sure you have `go` installed
-- Clone the repo.
-- Change directory to repo and run
-
-```go
-  go mod tidy
-```
-
-- Run the code
-
-```go
-  go run ./main.go
-```
-
-- The app will open a repl by default
-- To execute a file use `--file` flag followed by file path.
-
-```go
-  go run ./main.go --file ./sampleCode.txt
-```
-
-## Sample code
-
-```
 atom a = 1;
 atom b = 2;
 a + b;
@@ -62,7 +32,7 @@ metals[0];
 metals[1];
 metals[2];
 metals[3];
-metals[4];
+metals[4]; 
 
 push(metals, "platinum");
 
@@ -75,4 +45,3 @@ first(metals);
 last(metals);
 
 rest(metals);
-```

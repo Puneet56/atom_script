@@ -33,7 +33,7 @@ var builtins = map[string]*object.Builtin{
 
 			for _, arg := range args {
 				out.WriteString(arg.Inspect())
-				out.WriteString(", ")
+				out.WriteString(" ")
 			}
 
 			return &object.String{
