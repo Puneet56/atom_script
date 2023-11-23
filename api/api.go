@@ -7,7 +7,6 @@ import (
 	"atom_script/parser"
 	"atom_script/token"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 
@@ -17,16 +16,6 @@ import (
 
 type Code struct {
 	Code string `json:"code"`
-}
-
-func logOutput() io.Writer {
-	file, err := os.OpenFile("logs.txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-
-	if err != nil {
-		return os.Stdout
-	}
-
-	return file
 }
 
 func Init() {
@@ -39,7 +28,6 @@ func Init() {
 	e.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{
 			Format: "method=${method}, uri=${uri}, status=${status}\n",
-			Output: logOutput(),
 		},
 	))
 
