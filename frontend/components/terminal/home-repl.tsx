@@ -1,6 +1,7 @@
 'use client';
 import REPL from '@/features/repl';
 import { eventBus } from '@/lib/event-bus';
+import services from '@/services';
 import { useEffect, useRef } from 'react';
 import { Button } from '../ui/button';
 
@@ -8,6 +9,10 @@ export const HomeRepl = () => {
 	const replRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
+		try {
+			services.healthCheck();
+		} catch (error) {}
+
 		eventBus.subscribe('repl:trynow', () => {
 			replRef?.current?.scrollIntoView({ behavior: 'smooth' });
 		});

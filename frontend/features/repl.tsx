@@ -28,7 +28,7 @@ const REPL = ({ height = '300px' }) => {
 			</TerminalOutput>,
 		]);
 
-		if (!input.endsWith(';')) {
+		if (!input.endsWith('}') && !input.endsWith(';')) {
 			input = input + ';';
 		}
 

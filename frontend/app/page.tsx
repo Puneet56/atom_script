@@ -13,7 +13,7 @@ export default function Home() {
 		>
 			<div className="container">
 				<div className="mb-12 flex flex-col items-center justify-center gap-4 pt-44 text-center text-white md:gap-8">
-					<h1 className="text-shadow text-4xl font-semibold sm:text-6xl md:text-8xl">AtomScipt</h1>
+					<h1 className="text-shadow text-4xl font-semibold sm:text-6xl md:text-8xl">AtomScript</h1>
 					<h2 className="text-shadow text-xl font-bold sm:text-2xl md:text-4xl">Tiny Code, Big Reactions!</h2>
 
 					<div className="flex items-center justify-center gap-8">
@@ -120,8 +120,8 @@ export default function Home() {
 					<div className="w-full">
 						<TerminalCard
 							code={[
-								'molecule elements = [1, 2, 3, 4, 5, 6, 7]',
-								'molecule result = { \n  "temprature" : "300", \n  "pressure" : "1atm" \n}',
+								'molecule elements = [1, 2, 3, 4, 5, 6, 7];',
+								'molecule result = { \n  "temperature" : "300", \n  "pressure" : "1atm" \n}',
 							]}
 						/>
 					</div>
@@ -134,7 +134,7 @@ export default function Home() {
 
 					<div className="w-full">
 						<TerminalCard
-							code={['atom baseWeight = 30', `reaction getWeight(weight) {\n  produce weight + baseWeight;\n}`]}
+							code={['atom baseWeight = 30;', `reaction getWeight(weight) {\n  produce weight + baseWeight;\n}`]}
 						/>
 					</div>
 				</div>

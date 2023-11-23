@@ -6,6 +6,10 @@ class CodeService {
 		return new CodeService();
 	}
 
+	async healthCheck() {
+		return axios.get(process.env.NEXT_PUBLIC_API_URL!);
+	}
+
 	async tokenizeCode(code: string) {
 		return axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/tokenize', { code });
 	}
