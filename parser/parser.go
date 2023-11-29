@@ -471,21 +471,21 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 }
 
 func (p *Parser) parseReactionLiteral() ast.Expression {
-	lit := &ast.ReactionLiteral{Token: p.curToken, Type: "ReactionLiteral"}
+	rl := &ast.ReactionLiteral{Token: p.curToken, Type: "ReactionLiteral"}
 
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
-	lit.Parameters = p.parseReactionParameters()
+	rl.Parameters = p.parseReactionParameters()
 
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
 
-	lit.Body = p.parseBlockStatement()
+	rl.Body = p.parseBlockStatement()
 
-	return lit
+	return rl
 }
 
 func (p *Parser) parseReactionParameters() []*ast.Identifier {

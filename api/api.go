@@ -9,10 +9,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
+
+var lastApiCall = ""
 
 type Code struct {
 	Code string `json:"code"`
@@ -20,10 +23,6 @@ type Code struct {
 
 func Init() {
 	e := echo.New()
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
 
 	e.Use(middleware.LoggerWithConfig(
 		middleware.LoggerConfig{
@@ -35,6 +34,19 @@ func Init() {
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
 	}))
+
+	e.GET("/", func(c echo.Context) error {
+		lastApiCall = time.Now().Format(time.UnixDate)
+
+		code := fmt.Sprintf("current time is %s.\n Last api request was at %s", time.Now().Format(time.UnixDate), lastApiCall)
+
+		l := lexer.New(code)
+		parser.New(l)
+
+		fmt.Println("code")
+
+		return c.String(http.StatusOK, code)
+	})
 
 	e.POST("/api/tokenize", handleTokenize)
 	e.POST("/api/ast", handleGenerateAst)
