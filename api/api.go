@@ -36,14 +36,11 @@ func Init() {
 	}))
 
 	e.GET("/", func(c echo.Context) error {
-		lastApiCall = time.Now().Format(time.UnixDate)
-
 		code := fmt.Sprintf("current time is %s.\n Last api request was at %s", time.Now().Format(time.UnixDate), lastApiCall)
+		lastApiCall = time.Now().Format(time.UnixDate)
 
 		l := lexer.New(code)
 		parser.New(l)
-
-		fmt.Println("code")
 
 		return c.String(http.StatusOK, code)
 	})
