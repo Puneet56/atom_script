@@ -15,6 +15,7 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) == 0 {
+		fmt.Println("Starting REPL...")
 		repl.Start()
 		return
 	}
@@ -33,7 +34,7 @@ func main() {
 		evalFile(args[1])
 
 	default:
-		fmt.Println("Starting API server...")
+		fmt.Println("Starting REPL...")
 		repl.Start()
 	}
 }
