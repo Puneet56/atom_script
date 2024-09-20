@@ -3,6 +3,7 @@ book.pdf
 /tmp
 .vscode
 writing_an_interpreter_in_go_1.7.pdf
+compiler-book/
 
 out.txt
 logs.txt

@@ -8,26 +8,26 @@
 - Clone the repo.
 - Change directory to repo and run
 
-```go
+```sh
   go mod tidy
 ```
 
 - Run the code
 
-```go
+```sh
   go run ./main.go
 ```
 
 - The app will open a repl by default
 - To execute a file use `--file` flag followed by file path.
 
-```go
+```sh
   go run ./main.go --file ./sampleCode.txt
 ```
 
 ## Sample code
 
-```
+```js
 atom a = 1;
 atom b = 2;
 a + b;
