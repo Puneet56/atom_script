@@ -1,6 +1,6 @@
 # AtomScript Frontend
 
-This is a Next.js project showcasing **AtomScript**, a programming language designed for defining atoms, reactions, and molecules. The project includes an interactive REPL (Read-Eval-Print Loop) and a code editor to experiment with AtomScript.
+This is a Next.js project showcasing **AtomScript**, a programming language. The project includes an interactive REPL (Read-Eval-Print Loop) and a code editor to experiment with AtomScript.
 
 ## Features
 
