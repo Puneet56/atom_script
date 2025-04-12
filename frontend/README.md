@@ -4,7 +4,7 @@ This is a Next.js project showcasing **AtomScript**, a programming language. The
 
 ## Features
 
-- **Interactive REPL**: Execute AtomScript code directly in the browser.
+- **Interactive REPL**: Execute AtomScript code directly in the browser. A Fork of this project [jonmbake/react-terminal-ui](https://github.com/jonmbake/react-terminal-ui). Thanks!
 - **Code Editor**: Write, tokenize, parse, and evaluate AtomScript code.
 - **Syntax Highlighting**: Powered by Prism.js for AtomScript grammar.
 - **Responsive Design**: Optimized for various screen sizes.
