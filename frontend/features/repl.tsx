@@ -16,8 +16,6 @@ const REPL = ({ height = '300px' }) => {
 
 	const [code, setCode] = useState<CodeBlock[]>([]);
 
-	useEffect(() => {}, []);
-
 	const executeCommand = async (input: string) => {
 		setLoading(true);
 

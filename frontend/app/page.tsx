@@ -59,7 +59,7 @@ export default function Home() {
 
 				<div className="mx-auto mt-12 flex flex-col items-center justify-between gap-x-8 gap-y-4 md:flex-row-reverse">
 					<div className="w-full">
-						<h2 className="text-center text-lg md:text-2xl">Perfrom arithmetic operations.</h2>
+						<h2 className="text-center text-lg md:text-2xl">Perform arithmetic operations</h2>
 					</div>
 
 					<div className="w-full">
